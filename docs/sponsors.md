@@ -9,7 +9,7 @@ Use these lines on the slides and in the submission. Status: **live** = it runs 
 | **SingleStore** | The audit trail: one row per decision, with its source, model and cost. | live |
 | **Statsig** | A safety switch: the `auto_submit` gate stays off, so a human approves every purchase. Every step is an event. | live |
 | **Amplitude** | Agent analytics: each step of each trip is a tracked event, so we see where the agent spends time and money. | live |
-| **Persona** | Planned: verify that the human who clicks "approve" is really Tokyo. | next |
+| **Persona** | Before a purchase is submitted, Marco can send the approver a Persona verification link, and the result goes on the audit trail (sandbox). | built; live run pending |
 | **Firedrill** | Simulates a plan change and a "skip approval" attack to test Marco before real bookings. Scores 99.3 and 98.8. | live |
 | **Superlinked SIE** | Superlinked SIE: reranks Marco's memory recall, so the right habit comes first. | live |
 | **Guild** | Planned: host Marco as a managed agent. | next |

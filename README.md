@@ -40,6 +40,7 @@ Every step writes one row: the step, the decision, the sources, the model, the c
 | **Statsig** | The `auto_submit` gate stays off, so a human approves every purchase. Each step is also an event. |
 | **Amplitude** | Agent analytics: each step of each trip is a tracked event. |
 | **Superlinked SIE** | Reranks memory recall (Qwen3-Reranker on SIE Serverless), so the right habit comes first. |
+| **Persona** | Before a purchase is submitted, Marco can send the approver a Persona verification link, and the result goes on the audit trail (sandbox, `services/persona`). |
 | **Firedrill** | Simulated travellers and plan changes test Marco's decisions before they touch real bookings (`services/drill`). |
 
 ## How it is built

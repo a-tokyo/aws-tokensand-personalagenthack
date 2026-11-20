@@ -23,7 +23,7 @@ One row per agent step. SingleStore table `decisions`. Local fallback: append to
   "step": "recall | policy | rank | perk_fill | perk_submit | perk_cancel | uber_schedule | uber_cancel | calendar | email_draft | ticket | kb_write | notify | approval",
   "status": "proposed | approved | done | failed | cancelled",
   "summary": "one STE sentence, max 200 chars",
-  "sources": [{"type": "cognee | kb | senso | gmail | slack | calendar | perk | web", "ref": "id or url", "quote": "max 200 chars"}],
+  "sources": [{"type": "cognee | kb | senso | gmail | slack | calendar | perk | web | persona", "ref": "id or url", "quote": "max 200 chars"}],
   "model": "provider/model or null",
   "cost_usd": 0.0,
   "external_ref": "perk trip id, uber ride id, calendar event id, clickup task id, or null",

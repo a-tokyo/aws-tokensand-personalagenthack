@@ -35,7 +35,7 @@ STEPS = {
     "approval",
 }
 STATUSES = {"proposed", "approved", "done", "failed", "cancelled"}
-SOURCE_TYPES = {"cognee", "kb", "senso", "gmail", "slack", "calendar", "perk", "web"}
+SOURCE_TYPES = {"cognee", "kb", "senso", "gmail", "slack", "calendar", "perk", "web", "persona"}
 ROW_COLUMNS = (
     "id",
     "ts",
