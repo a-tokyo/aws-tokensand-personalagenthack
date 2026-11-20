@@ -1,0 +1,53 @@
+flowchart LR
+  classDef ch fill:#1f3a5f,stroke:#5fa8d3,color:#fff
+  classDef core fill:#0f5f5a,stroke:#3fd0c0,color:#fff
+  classDef sp fill:#2b2440,stroke:#b39ddb,color:#fff
+  classDef act fill:#4a3b12,stroke:#e0b04a,color:#fff
+  classDef human fill:#3b1f2b,stroke:#f48fb1,color:#fff
+
+  subgraph IN["Channels"]
+    SL["Slack trip threads<br/>(tag or proactive)"]:::ch
+    TG["Telegram DM"]:::ch
+    GM["Gmail watcher<br/>(plan changes)"]:::ch
+  end
+
+  subgraph CORE["Marco · OpenClaw agent"]
+    M["Plan · Rank · Replan<br/>STE replies, Block Kit cards"]:::core
+  end
+
+  subgraph CTX["Context"]
+    CG["Cognee<br/>memory from Slack, Gmail,<br/>Calendar, Drive, KB"]:::sp
+    SIE["Superlinked SIE<br/>rerank recall"]:::sp
+    SE["Senso<br/>travel policy + citations"]:::sp
+    AR["Arcee open-weight models<br/>ranking tier (credits pending)"]:::sp
+  end
+
+  H["One human click<br/>@Marco approve"]:::human
+
+  subgraph DO["Actions (real)"]
+    PK["Perk trip"]:::act
+    UB["Uber ride"]:::act
+    GW["Calendar · Tasks · Drafts"]:::act
+  end
+
+  subgraph TRUST["Trust & audit"]
+    SS["SingleStore<br/>audit trail"]:::sp
+    ST["Statsig<br/>gates: auto_submit off,<br/>proactive_mode on"]:::sp
+    AM["Amplitude<br/>agent events"]:::sp
+    FD["Firedrill<br/>simulation tests"]:::sp
+    GD["Guild<br/>cloud trip desk + cost control"]:::sp
+  end
+
+  SL --> M
+  TG --> M
+  GM --> M
+  M <--> CG
+  CG --> SIE --> M
+  M <--> SE
+  M -. rank .-> AR
+  M --> H --> DO
+  M --> SS
+  M --> ST
+  M --> AM
+  FD -. tests .-> M
+  GD -.-> CG
