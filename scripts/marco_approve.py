@@ -152,7 +152,17 @@ def main(argv=None) -> int:
         {"step": "perk_fill", "browser": "Chrome", "do": f"Apply option {a.option} to Perk draft {perk_id} (skill perk-booker step 10b). Extend the hotel if proposed."},
         {"step": "uber_schedule", "browser": "Chrome 4", "do": f"Move ride {ride.get('reservation_id')} to the proposed time. Edit allows 7 days ahead only, so cancel and reserve again (skill uber-schedule). Mindera profile, code 2K."},
     ]
-    if a.submit:
+    if state.get("demo_mode"):
+        # Live demo: Perk and Uber stay prepared and held. No browser call, no purchase.
+        out["browser_todo"] = []
+        out["held"] = [
+            {"step": "perk_fill", "text": f"Perk option {a.option}: prepared, held for live demo. Not submitted."},
+            {"step": "uber_schedule", "text": "Uber to SFO Fri 4 Dec 05:30, code 2K: prepared, held for live demo."},
+        ]
+        for h in out["held"]:
+            cli("services.audit", "record", "--json", json.dumps(row(
+                a.trip, h["step"], "proposed", h["text"], perk_src, approved_by=a.approved_by)))
+    elif a.submit:
         out["browser_todo"].append({"step": "perk_submit", "browser": "Chrome", "do": f"Press 'Send approval request' for Perk trip {perk_id} (skill perk-booker step 8)."})
     # Keep the live ids with the trip, so a replan finds them without old audit rows.
     state["calendar_event_ids"] = out["calendar"]["event_ids"]

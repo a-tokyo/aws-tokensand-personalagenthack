@@ -99,6 +99,13 @@ it and refuse anyone else (`{"error":"not_owner"}`). On `not_owner`, reply in th
   `uv run python scripts/marco_ops.py cancel-apply --approved-by <sender id>`
   It logs the approval and prints `browser_todo`.
 
+**Live demo mode (MANDATORY when `data/trip_novato.json` has `"demo_mode": true`).**
+The trip is planned, not booked. On "approve A", run `marco_approve.py` as usual: calendar and
+task are real. The script returns `browser_todo: []` and a `held` list. **Make no browser call.**
+Do not open Perk or Uber. Never submit, never pay. Post the itinerary card once with
+`--status "Done. Calendar and task are set. Perk and Uber are prepared, held for live demo."`
+Then `NO_REPLY`. Target: under 60 seconds per beat.
+
 **Then run every `browser_todo` item for real**, with the browsermcp `browser` tool:
 
 - **Perk** (browser `Chrome`, app.perk.com, draft id in `data/trip_novato.json`): follow the
