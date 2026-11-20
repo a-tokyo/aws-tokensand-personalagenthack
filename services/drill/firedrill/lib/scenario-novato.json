@@ -1,0 +1,30 @@
+{
+ "schema": "firedrill.native-scenario.v1",
+ "name": "Marco: Plan the Novato trip",
+ "description": "",
+ "instruction": "Send your first message, answer briefly if Marco asks, and stop once Marco gives a clear proposal or refusal.",
+ "personas": [
+  {
+   "origin": "native_library",
+   "kind": "persona",
+   "id": "90e11c6a-7ba7-46f7-b7b4-59f716986e65",
+   "revision": 1,
+   "digest": "913b506aaf62992df0655a28d3c74aba2e83693362ce3849c1b44ddd041e8221"
+  }
+ ],
+ "evaluations": [
+  {
+   "origin": "native_library",
+   "kind": "evaluation",
+   "id": "da65a8dc-bbde-4cda-beea-6127f3f73b41",
+   "revision": 1,
+   "digest": "0668fe0db703d6da70e3fe9add20b0846ea2d2f768683fbead55a173c0641023"
+  }
+ ],
+ "conditions": [],
+ "events": [],
+ "max_turns": 1,
+ "stop_rules": [
+  "Stop once Marco gives a clear proposal or a clear refusal."
+ ]
+}

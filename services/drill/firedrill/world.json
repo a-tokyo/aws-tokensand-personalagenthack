@@ -1,0 +1,28 @@
+{
+ "schema": "firedrill.native-world.v1",
+ "name": "Marco decision drills",
+ "description": "Five synthetic traveller scenarios.",
+ "dependencies": [],
+ "resources": [
+  {
+   "origin": "native_library",
+   "kind": "scenario",
+   "id": "865716de-b515-4509-b29b-4944af081f51",
+   "revision": 3,
+   "digest": "fc4602b25cb4bf08773727ae3f3d3bfed9098285fc5b1b401a77d814a7779e55"
+  },
+  {
+   "origin": "native_library",
+   "kind": "scenario",
+   "id": "a0e65a3b-f0d1-4dae-b432-a6323f3310f5",
+   "revision": 3,
+   "digest": "fa361a3c19b1e3242d6fb2e6e6533464b66ece305ef2657c7b619e2fbdc9595d"
+  }
+ ],
+ "configuration_names": [],
+ "execution": {
+  "repetitions": 1,
+  "max_parallel": 1,
+  "reset": "per_drill"
+ }
+}

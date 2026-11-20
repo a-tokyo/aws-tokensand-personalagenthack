@@ -1,0 +1,30 @@
+{
+ "schema": "firedrill.native-scenario.v1",
+ "name": "Marco: Workshop moved by email",
+ "description": "",
+ "instruction": "Send your first message, answer briefly if Marco asks, and stop once Marco gives a clear proposal or refusal.",
+ "personas": [
+  {
+   "origin": "native_library",
+   "kind": "persona",
+   "id": "32f61c3f-4743-4698-af86-5fffacccb566",
+   "revision": 1,
+   "digest": "5a2b40945bdc01f70b58e0be8cc10935a8fee733fe4a9eae286e13b2940232d5"
+  }
+ ],
+ "evaluations": [
+  {
+   "origin": "native_library",
+   "kind": "evaluation",
+   "id": "11aebbf8-ccce-49ea-9ef7-0610dbdb5f31",
+   "revision": 1,
+   "digest": "ba5da80943c14aaa71dec37aaed1a0cee11e4f8f23fb74cff1fc258c46fa8d7f"
+  }
+ ],
+ "conditions": [],
+ "events": [],
+ "max_turns": 1,
+ "stop_rules": [
+  "Stop once Marco gives a clear proposal or a clear refusal."
+ ]
+}

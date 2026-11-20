@@ -1,0 +1,14 @@
+{
+ "schema": "firedrill.native-persona.v1",
+ "name": "Traveller: Habit fare sold out",
+ "description": "Habit fare sold out",
+ "goals": [
+  "Habit fare sold out"
+ ],
+ "constraints": [
+  "Keeps messages short"
+ ],
+ "communication": "Short, direct messages.",
+ "initial_message": "My usual TAP economy fare is sold out for the Novato flight. What do I fly?",
+ "memory_facts": []
+}

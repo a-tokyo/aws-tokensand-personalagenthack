@@ -1,0 +1,14 @@
+{
+ "schema": "firedrill.native-persona.v1",
+ "name": "Traveller: Plan the Dublin trip",
+ "description": "Plan the Dublin trip",
+ "goals": [
+  "Plan the Dublin trip"
+ ],
+ "constraints": [
+  "Keeps messages short"
+ ],
+ "communication": "Short, direct messages.",
+ "initial_message": "Marco, I need a Dublin trip next week for the client workshop. Plan it.",
+ "memory_facts": []
+}

@@ -1,0 +1,80 @@
+// ── Marco's Slack channel config ────────────────────────────────────────────
+// openclaw.json pulls it in with `$include` at channels.slack.
+// `$include` REPLACES the containing object, so these keys become channels.slack.
+// Edits do not hot-reload. Restart the gateway (scripts/marco-up.sh).
+// Marco has its own Slack app. Never put Pascal's or Marvis's tokens here.
+{
+  "enabled": true,
+  // Socket mode dials OUT over a WebSocket, so Slack needs no public ingress.
+  "mode": "socket",
+
+  "botToken": { "source": "env", "provider": "default", "id": "SLACK_BOT_TOKEN" },
+  "appToken": { "source": "env", "provider": "default", "id": "SLACK_APP_TOKEN" },
+
+  "userTokenReadOnly": true,
+
+  // ── DM policy ────────────────────────────────────────────────────────────
+  // `allowlist`, not `pairing`. Only Tokyo may DM Marco.
+  // SLACK_OWNER_ID is Tokyo's member id (U…) in the workspace that hosts Marco's app.
+  // An unset value stays literal and denies every DM, with no error.
+  "dmPolicy": "allowlist",
+  "allowFrom": [
+    "${SLACK_OWNER_ID}"
+  ],
+  "dm": {
+    "enabled": true
+  },
+
+  // ── Group policy ─────────────────────────────────────────────────────────
+  // Keys MUST be channel IDS (C…). A name matches nothing, and nothing is logged.
+  "groupPolicy": "allowlist",
+  "channels": {
+    // #marco-agent (public, GF): Marco's trip desk. Explicit @Marco mention only, also inside
+    // threads, so people can talk freely. Anyone may tag Marco for a proposal.
+    // Only Tokyo approves: the apply scripts check the sender id against SLACK_OWNER_ID.
+    "C0CKA55HJ31": {
+      "enabled": true,
+      "requireMention": false,
+      "replyToMode": "all",
+      "requireMentionInBotThreads": false
+    },
+    // #novato-trip (public, GF): the demo channel. Same rules as #marco-agent.
+    "C0CLLEH6D1N": {
+      "enabled": true,
+      "requireMention": false,
+      "replyToMode": "all",
+      "requireMentionInBotThreads": false
+    }
+  },
+
+  "requireMention": true,
+  // No implicit mentions: a thread reply, or a reply to Marco, needs an explicit @Marco.
+  "implicitMentions": {
+    "threadParticipation": false,
+    "replyToBot": false
+  },
+
+  // 👀 on every message Marco picks up, so a long run is visible at once.
+  "ackReaction": "eyes",
+
+  // DMs: reply top-level. With "all", DM replies went into a thread under Tokyo's
+  // message, and the DM looked silent. Channels: reply in a thread under the trigger.
+  "replyToMode": "all",
+  "replyToModeByChatType": {
+    "direct": "off",
+    "channel": "all"
+  },
+  // Streaming off: post each reply as one plain message. It is the simplest path for a demo.
+  "streaming": {
+    "mode": "off"
+  },
+
+  // Exec prompts go to Tokyo's DM only.
+  "execApprovals": {
+    "enabled": true,
+    "approvers": [
+      "${SLACK_OWNER_ID}"
+    ],
+    "target": "dm"
+  }
+}

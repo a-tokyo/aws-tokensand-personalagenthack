@@ -1,0 +1,14 @@
+{
+ "schema": "firedrill.native-persona.v1",
+ "name": "Traveller: Workshop moved by email",
+ "description": "Workshop moved by email",
+ "goals": [
+  "Workshop moved by email"
+ ],
+ "constraints": [
+  "Keeps messages short"
+ ],
+ "communication": "Short, direct messages.",
+ "initial_message": "Marco, the workshop moved to 18 January by email. Fix my trip.",
+ "memory_facts": []
+}

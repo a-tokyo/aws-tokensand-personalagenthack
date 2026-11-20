@@ -1,0 +1,7 @@
+{"schema":"firedrill.local-descriptor.v1",
+ "source_roots":[{"alias":"app","identity_sha256":"fabe095d8419c8a29be512e35e1326702823c95853ad6ce58f29fff7d2d86dbe"}],
+ "services":[{"alias":"agent","root_alias":"app","role":"agent","depends_on":[],"configuration":[]}],
+ "entry_service":"agent",
+ "driver":{"profile":"jsonl-process.v1","adapter_sha256":"9769f37cd55ec6e244980ee38d4738b9fd0c83c89b8a8ed5b0372d0720fc79ce","authentication":"anonymous","state_domains":["proc"]},
+ "state_domains":[{"alias":"proc","service_alias":"agent","kind":"process","location":"local","reset":"fresh-process","concurrency":"independent","hook_sha256":null}],
+ "dependencies":[]}

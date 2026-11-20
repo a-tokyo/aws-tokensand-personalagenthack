@@ -1,0 +1,333 @@
+{
+  "secrets": {
+    "providers": {
+      "default": {
+        "source": "env"
+      }
+    },
+    "defaults": {
+      "env": "default"
+    }
+  },
+  "auth": {
+    "profiles": {
+      "anthropic": {
+        "provider": "anthropic",
+        "mode": "api_key"
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "workspace": "${MARCO_HOME}/agent/workspace",
+      "bootstrapMaxChars": 20000,
+      "bootstrapTotalMaxChars": 60000,
+      "reasoningDefault": "off",
+      "model": {
+        "primary": "anthropic/claude-sonnet-5-5",
+        "fallbacks": [
+          "anthropic/claude-opus-5-5",
+          "anthropic/claude-haiku-5-5"
+        ]
+      },
+      "heartbeat": {
+        "every": "360m",
+        "model": "anthropic/claude-haiku-5-5",
+        "isolatedSession": true,
+        "lightContext": true,
+        "timeoutSeconds": 120
+      },
+      "models": {
+        "anthropic/claude-opus-5-5": {
+          "params": {
+            "cacheRetention": "short"
+          }
+        },
+        "anthropic/claude-sonnet-5-5": {
+          "params": {
+            "cacheRetention": "short"
+          }
+        },
+        "anthropic/claude-haiku-5-5": {
+          "params": {
+            "cacheRetention": "short"
+          }
+        }
+      },
+      "contextPruning": {
+        "mode": "cache-ttl",
+        "ttl": "1h"
+      },
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      },
+      "sandbox": {
+        "mode": "off"
+      },
+      "modelPolicy": {
+        "allow": [
+          "anthropic/claude-opus-5-5",
+          "anthropic/claude-sonnet-5-5",
+          "anthropic/claude-haiku-5-5"
+        ]
+      }
+    }
+  },
+  "gateway": {
+    "port": 19789,
+    "mode": "local",
+    "bind": "loopback",
+    "auth": {
+      "mode": "token",
+      "token": {
+        "source": "env",
+        "provider": "default",
+        "id": "GATEWAY_AUTH_TOKEN"
+      },
+      "rateLimit": {
+        "maxAttempts": 10,
+        "windowMs": 60000,
+        "lockoutMs": 300000
+      }
+    },
+    "controlUi": {
+      "allowedOrigins": [
+        "http://localhost:19789",
+        "http://127.0.0.1:19789"
+      ]
+    },
+    "tailscale": {
+      "mode": "off"
+    },
+    "nodes": {
+      "commands": {
+        "deny": [
+          "camera.snap",
+          "camera.clip",
+          "screen.record",
+          "calendar.add",
+          "contacts.add",
+          "reminders.add"
+        ]
+      }
+    }
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions",
+    "groupChat": {
+      "unmentionedInbound": "room_event",
+      "visibleReplies": "message_tool",
+      "historyLimit": 50
+    }
+  },
+  "tools": {
+    "elevated": {
+      "enabled": false
+    },
+    "profile": "coding",
+    "alsoAllow": [
+      "message"
+    ],
+    "exec": {
+      "host": "gateway",
+      "security": "full",
+      "ask": "off"
+    }
+  },
+  "session": {
+    "dmScope": "per-channel-peer",
+    "maintenance": {
+      "maxEntries": 2000
+    }
+  },
+  "skills": {
+    "load": {
+      "allowSymlinkTargets": [
+        "${MARCO_HOME}/agent/workspace/.agents/skills"
+      ]
+    },
+    "install": {
+      "nodeManager": "npm"
+    },
+    "entries": {
+      "1password": {
+        "enabled": false
+      },
+      "apple-notes": {
+        "enabled": false
+      },
+      "apple-reminders": {
+        "enabled": false
+      },
+      "bear-notes": {
+        "enabled": false
+      },
+      "blogwatcher": {
+        "enabled": false
+      },
+      "blucli": {
+        "enabled": false
+      },
+      "camsnap": {
+        "enabled": false
+      },
+      "coding-agent": {
+        "enabled": false
+      },
+      "eightctl": {
+        "enabled": false
+      },
+      "gemini": {
+        "enabled": false
+      },
+      "gifgrep": {
+        "enabled": false
+      },
+      "gog": {
+        "enabled": false
+      },
+      "goplaces": {
+        "enabled": false
+      },
+      "himalaya": {
+        "enabled": false
+      },
+      "model-usage": {
+        "enabled": false
+      },
+      "notion": {
+        "enabled": false
+      },
+      "obsidian": {
+        "enabled": false
+      },
+      "openai-whisper": {
+        "enabled": false
+      },
+      "openai-whisper-api": {
+        "enabled": false
+      },
+      "openhue": {
+        "enabled": false
+      },
+      "oracle": {
+        "enabled": false
+      },
+      "ordercli": {
+        "enabled": false
+      },
+      "peekaboo": {
+        "enabled": false
+      },
+      "sag": {
+        "enabled": false
+      },
+      "sherpa-onnx-tts": {
+        "enabled": false
+      },
+      "songsee": {
+        "enabled": false
+      },
+      "sonoscli": {
+        "enabled": false
+      },
+      "spotify-player": {
+        "enabled": false
+      },
+      "summarize": {
+        "enabled": false
+      },
+      "things-mac": {
+        "enabled": false
+      },
+      "tmux": {
+        "enabled": false
+      },
+      "trello": {
+        "enabled": false
+      },
+      "xurl": {
+        "enabled": false
+      }
+    }
+  },
+  "hooks": {
+    "internal": {
+      "enabled": true,
+      "entries": {
+        "boot-md": {
+          "enabled": true
+        },
+        "command-logger": {
+          "enabled": true
+        },
+        "session-memory": {
+          "enabled": true
+        }
+      }
+    }
+  },
+  "mcp": {
+    "$include": "./_config/mcp.json5"
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "botToken": {
+        "source": "env",
+        "provider": "default",
+        "id": "TELEGRAM_BOT_TOKEN"
+      },
+      "dmPolicy": "allowlist",
+      "allowFrom": [
+        "${TELEGRAM_OWNER_ID}"
+      ],
+      "groupPolicy": "disabled",
+      "streaming": {
+        "mode": "partial"
+      }
+    },
+    "slack": {
+      "$include": "./_config/slack.json5"
+    }
+  },
+  "plugins": {
+    "deny": [
+      "codex"
+    ],
+    "entries": {
+      "codex": {
+        "enabled": false
+      },
+      "browser": {
+        "enabled": false
+      },
+      "anthropic": {
+        "enabled": true
+      },
+      "telegram": {
+        "enabled": true
+      },
+      "slack": {
+        "enabled": true
+      }
+    }
+  },
+  "commands": {
+    "ownerAllowFrom": [
+      "telegram:${TELEGRAM_OWNER_ID}",
+      "slack:${SLACK_OWNER_ID}"
+    ]
+  },
+  "meta": {
+    "migrations": {
+      "modelPolicyAllowlist": true,
+      "utilityModelSeparation": true
+    },
+    "lastTouchedVersion": "2026.10.9"
+  }
+}

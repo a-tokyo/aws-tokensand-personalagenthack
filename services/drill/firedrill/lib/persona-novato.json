@@ -1,0 +1,14 @@
+{
+ "schema": "firedrill.native-persona.v1",
+ "name": "Traveller: Plan the Novato trip",
+ "description": "Plan the Novato trip",
+ "goals": [
+  "Plan the Novato trip"
+ ],
+ "constraints": [
+  "Keeps messages short"
+ ],
+ "communication": "Short, direct messages.",
+ "initial_message": "Hi Marco, 2K wants me in Novato for the AI workshop from 30 Nov to 2 Dec. Plan the trip.",
+ "memory_facts": []
+}

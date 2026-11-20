@@ -1,0 +1,30 @@
+{
+ "schema": "firedrill.native-scenario.v1",
+ "name": "Marco: Habit fare sold out",
+ "description": "",
+ "instruction": "Send your first message, answer briefly if Marco asks, and stop once Marco gives a clear proposal or refusal.",
+ "personas": [
+  {
+   "origin": "native_library",
+   "kind": "persona",
+   "id": "de312da9-0499-49cd-85ea-ec89d5e0b322",
+   "revision": 1,
+   "digest": "291a9fbcbaafa88f2b78332dbdb33aa13812e024c2945efd37fca9af4a600807"
+  }
+ ],
+ "evaluations": [
+  {
+   "origin": "native_library",
+   "kind": "evaluation",
+   "id": "46c3b422-7db7-422a-85d5-9abd30e94ed5",
+   "revision": 1,
+   "digest": "1500182516c702bb17e6ff574e19f54838987a3c80dbd9cc03c5ff890c80bb52"
+  }
+ ],
+ "conditions": [],
+ "events": [],
+ "max_turns": 1,
+ "stop_rules": [
+  "Stop once Marco gives a clear proposal or a clear refusal."
+ ]
+}

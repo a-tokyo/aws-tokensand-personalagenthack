@@ -1,0 +1,17 @@
+// ── Marco's MCP servers ─────────────────────────────────────────────────────
+// openclaw.json pulls it in with `$include` at `mcp`.
+// `$include` REPLACES the containing object, so `servers` is the first key below.
+// Edits do not hot-reload. Run `openclaw mcp reload`, or restart the gateway.
+{
+  "servers": {
+    // Browser MCP drives Tokyo's own Chrome through the Browser MCP extension.
+    // Marco uses it for Perk and Uber (the perk-booker and uber-schedule skills).
+    // The extension must be installed and a tab must be connected.
+    // Every final button (submit, request, confirm) is behind the approval gate in AGENTS.md.
+    "browsermcp": {
+      "enabled": true,
+      "command": "npx",
+      "args": ["@browsermcp/mcp@latest"]
+    }
+  }
+}

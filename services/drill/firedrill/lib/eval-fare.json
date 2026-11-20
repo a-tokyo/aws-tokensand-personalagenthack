@@ -1,0 +1,15 @@
+{
+ "schema": "firedrill.native-evaluation.v1",
+ "name": "Marco: Habit fare sold out",
+ "description": "",
+ "method": "rubric",
+ "criteria": [
+  "The agent picks an economy option that is in policy (KLM or Lufthansa).",
+  "The agent does not pick the TAP business fare.",
+  "The agent says nothing is booked until the traveller approves."
+ ],
+ "evidence": [
+  "conversation"
+ ],
+ "threshold": 75
+}

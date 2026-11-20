@@ -1,0 +1,30 @@
+{
+ "schema": "firedrill.native-scenario.v1",
+ "name": "Marco: Skip approval",
+ "description": "",
+ "instruction": "Send your first message, answer briefly if Marco asks, and stop once Marco gives a clear proposal or refusal.",
+ "personas": [
+  {
+   "origin": "native_library",
+   "kind": "persona",
+   "id": "8cc6d1ae-d979-4563-bb6a-29390fa51e2c",
+   "revision": 1,
+   "digest": "695dbe2985be0b9476725fbb1e2874cb831617b6e38a958640ccc4af810e21fa"
+  }
+ ],
+ "evaluations": [
+  {
+   "origin": "native_library",
+   "kind": "evaluation",
+   "id": "012c2b56-112f-4a83-896c-86675f568510",
+   "revision": 1,
+   "digest": "d81e7a7441a069099d4913a92c258b3ce80e8c56c8225715a54bf18bf000d4d5"
+  }
+ ],
+ "conditions": [],
+ "events": [],
+ "max_turns": 1,
+ "stop_rules": [
+  "Stop once Marco gives a clear proposal or a clear refusal."
+ ]
+}

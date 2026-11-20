@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Marco audit trail</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --text: #172033;
+      --muted: #647087;
+      --line: #d8deea;
+      --accent: #3157d5;
+      --shadow: 0 12px 34px rgb(34 51 84 / 10%);
+      --proposed: #8b5a00;
+      --proposed-bg: #fff0c2;
+      --approved: #2452a4;
+      --approved-bg: #dce8ff;
+      --done: #17633a;
+      --done-bg: #d8f5e5;
+      --failed: #9b2525;
+      --failed-bg: #ffe0e0;
+      --cancelled: #5c6370;
+      --cancelled-bg: #e8eaf0;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0e1320;
+        --panel: #171e2e;
+        --text: #edf1fa;
+        --muted: #9ca9bf;
+        --line: #303a50;
+        --accent: #91aaff;
+        --shadow: 0 16px 40px rgb(0 0 0 / 25%);
+        --proposed: #ffd677;
+        --proposed-bg: #4d3a0d;
+        --approved: #afc8ff;
+        --approved-bg: #223e72;
+        --done: #8ee2b2;
+        --done-bg: #183f2b;
+        --failed: #ffaaaa;
+        --failed-bg: #562525;
+        --cancelled: #c1c8d5;
+        --cancelled-bg: #353c49;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main { width: min(1040px, calc(100% - 32px)); margin: 0 auto; padding: 56px 0 80px; }
+    header { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 34px; }
+    h1 { margin: 0; font-size: clamp(28px, 5vw, 44px); letter-spacing: -0.04em; }
+    .eyebrow { color: var(--accent); font-size: 12px; font-weight: 750; letter-spacing: .13em; text-transform: uppercase; }
+    .subtitle, .empty { color: var(--muted); }
+    #count { white-space: nowrap; }
+    .trip {
+      margin: 24px 0;
+      padding: 26px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+    .trip-head { display: flex; justify-content: space-between; gap: 18px; align-items: start; margin-bottom: 20px; }
+    .trip h2 { margin: 2px 0 0; font-size: 21px; overflow-wrap: anywhere; }
+    .cost { color: var(--muted); text-align: right; white-space: nowrap; }
+    .cost strong { display: block; color: var(--text); font-size: 18px; }
+    .timeline { position: relative; }
+    .timeline::before {
+      position: absolute;
+      top: 10px;
+      bottom: 10px;
+      left: 7px;
+      width: 2px;
+      background: var(--line);
+      content: "";
+    }
+    .row { position: relative; margin-left: 31px; padding: 0 0 26px; scroll-margin-top: 16px; }
+    .row:last-child { padding-bottom: 0; }
+    .row::before {
+      position: absolute;
+      top: 7px;
+      left: -30px;
+      width: 12px;
+      height: 12px;
+      border: 3px solid var(--panel);
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 1px var(--line);
+      content: "";
+    }
+    .row-top { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+    .step { font-size: 16px; font-weight: 760; }
+    .act, .model, time { color: var(--muted); font-size: 13px; }
+    .chip { padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+    .proposed { color: var(--proposed); background: var(--proposed-bg); }
+    .approved { color: var(--approved); background: var(--approved-bg); }
+    .done { color: var(--done); background: var(--done-bg); }
+    .failed { color: var(--failed); background: var(--failed-bg); }
+    .cancelled { color: var(--cancelled); background: var(--cancelled-bg); }
+    .summary { margin: 6px 0 9px; }
+    .meta { display: flex; flex-wrap: wrap; gap: 8px 15px; align-items: center; color: var(--muted); font-size: 13px; }
+    .sources { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
+    .source {
+      max-width: 100%;
+      padding: 4px 8px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      text-decoration: none;
+      overflow-wrap: anywhere;
+    }
+    a.source:hover, .supersedes:hover { border-color: var(--accent); color: var(--accent); }
+    .supersedes { color: var(--accent); text-decoration: none; }
+    .error {
+      padding: 18px;
+      border: 1px solid var(--failed);
+      border-radius: 12px;
+      color: var(--failed);
+      background: var(--panel);
+    }
+    @media (max-width: 620px) {
+      main { width: min(100% - 20px, 1040px); padding-top: 30px; }
+      header, .trip-head { align-items: start; flex-direction: column; }
+      .trip { padding: 19px; }
+      .cost { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <div class="eyebrow">Marco · decisions and actions</div>
+        <h1>Marco audit trail</h1>
+        <div class="subtitle">A source-linked record of each trip.</div>
+      </div>
+      <div id="count" class="subtitle">Loading…</div>
+    </header>
+    <div id="trips" aria-live="polite"></div>
+  </main>
+  <script>
+    const root = document.querySelector("#trips");
+    const count = document.querySelector("#count");
+
+    function node(tag, className, text) {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      if (text !== undefined) element.textContent = text;
+      return element;
+    }
+
+    function money(value) {
+      return new Intl.NumberFormat("en-US", {
+        style: "currency", currency: "USD", minimumFractionDigits: 4
+      }).format(Number(value) || 0);
+    }
+
+    function sourceNode(source) {
+      const isLink = /^https?:\/\//i.test(source.ref || "");
+      const item = node(isLink ? "a" : "span", "source");
+      item.textContent = `${source.type || "source"} · ${source.quote || source.ref || ""}`;
+      item.title = source.ref || "";
+      if (isLink) {
+        item.href = source.ref;
+        item.target = "_blank";
+        item.rel = "noreferrer";
+      }
+      return item;
+    }
+
+    function rowNode(row) {
+      const article = node("article", "row");
+      article.id = `row-${row.id}`;
+
+      const top = node("div", "row-top");
+      top.append(node("span", "step", (row.step || "step").replaceAll("_", " ")));
+      top.append(node("span", `chip ${row.status || "cancelled"}`, row.status || "unknown"));
+      top.append(node("span", "act", `Act · ${row.act || "other"}`));
+      article.append(top);
+      article.append(node("p", "summary", row.summary || "No summary."));
+
+      const meta = node("div", "meta");
+      const time = node("time", "", new Date(row.ts).toLocaleString());
+      time.dateTime = row.ts || "";
+      meta.append(time);
+      if (row.model) meta.append(node("span", "model", row.model));
+      meta.append(node("span", "", money(row.cost_usd)));
+      if (row.supersedes) {
+        const link = node("a", "supersedes", `↩ supersedes ${row.supersedes.slice(0, 8)}`);
+        link.href = `#row-${row.supersedes}`;
+        link.title = `Open the earlier row ${row.supersedes}`;
+        meta.append(link);
+      }
+      article.append(meta);
+
+      if (Array.isArray(row.sources) && row.sources.length) {
+        const sources = node("div", "sources");
+        row.sources.forEach(source => sources.append(sourceNode(source)));
+        article.append(sources);
+      }
+      return article;
+    }
+
+    function render(trips) {
+      const entries = Object.entries(trips || {}).sort((a, b) => a[0].localeCompare(b[0]));
+      count.textContent = `${entries.length} ${entries.length === 1 ? "trip" : "trips"}`;
+      if (!entries.length) {
+        root.append(node("p", "empty", "No audit rows are available."));
+        return;
+      }
+      entries.forEach(([tripId, unsortedRows]) => {
+        const rows = [...unsortedRows].sort((a, b) => String(a.ts).localeCompare(String(b.ts)));
+        const section = node("section", "trip");
+        const head = node("div", "trip-head");
+        const title = node("div");
+        title.append(node("div", "eyebrow", `${rows.length} ${rows.length === 1 ? "step" : "steps"}`));
+        title.append(node("h2", "", tripId));
+        const total = rows.reduce((sum, row) => sum + (Number(row.cost_usd) || 0), 0);
+        const cost = node("div", "cost", "Total AI cost");
+        cost.prepend(node("strong", "", money(total)));
+        head.append(title, cost);
+        section.append(head);
+        const timeline = node("div", "timeline");
+        rows.forEach(row => timeline.append(rowNode(row)));
+        section.append(timeline);
+        root.append(section);
+      });
+    }
+
+    const inline = document.getElementById("audit-data");
+    if (inline && inline.textContent.trim()) {
+      render(JSON.parse(inline.textContent).trips);
+    } else fetch("./audit.json", { cache: "no-store" })
+      .then(response => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+      })
+      .then(document => render(document.trips))
+      .catch(() => {
+        count.textContent = "Unavailable";
+        root.append(node("div", "error", "Could not load audit.json. Run the audit export, then serve this folder over HTTP."));
+      });
+  </script>
+</body>
+</html>
