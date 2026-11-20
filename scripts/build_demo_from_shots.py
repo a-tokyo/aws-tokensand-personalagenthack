@@ -59,14 +59,15 @@ SHOT_LIST: list[Shot] = [
          title="Ride moved to 05:30"),
     Shot(56.5, "slack_05.jpg", (0.5, 0.28, 0.5), (0.5, 0.62, 0.5), title="Approve. Fixed."),
     # Beat 03: someone else goes (61.5 s - 85 s)
-    Shot(61.0, "slack_06.jpg", (0.5, 0.28, 0.5), (0.5, 0.62, 0.5), title="03  Someone else goes instead"),
-    Shot(68.5, "slack_07.jpg", (0.5, 0.28, 0.5), (0.5, 0.62, 0.5), title="Cancel everything? Approve."),
+    Shot(61.0, "slack_06.jpg", (0.5, 0.22, 0.5), (0.5, 0.36, 0.5), title="03  Someone else goes instead"),
+    Shot(68.5, "slack_07.jpg", (0.5, 0.4, 0.5), (0.5, 0.62, 0.5), title="Cancel everything? Approve."),
     Shot(74.5, "firedrill_1.jpg", (0.5, 0.5, 1.0), (0.32, 0.55, 0.45), title="Firedrill: 99.3 and 98.8"),
-    # Beat 04: moved to January (85.5 s - 110 s)
+    # Beat 04: moved to January (85.5 s - 103 s), then the proactive beat (103 s - 110 s)
     Shot(85.0, "slack_08.jpg", (0.5, 0.22, 0.5), (0.5, 0.36, 0.5), title="04  The workshop moves to January"),
-    Shot(92.0, "slack_09.jpg", (0.5, 0.3, 0.5), (0.5, 0.55, 0.5), title="One plan for every linked item"),
-    Shot(99.0, "perk_1.jpg", (0.3, 0.3, 0.55), (0.3, 0.2, 0.4), title="Perk trip moved to 12 Jan"),
-    Shot(104.5, "slack_10.jpg", (0.5, 0.22, 0.5), (0.5, 0.3, 0.45), title="Approve. Everything moves."),
+    Shot(91.0, "slack_09.jpg", (0.5, 0.3, 0.5), (0.5, 0.5, 0.5), title="One plan for every linked item"),
+    Shot(97.0, "slack_10.jpg", (0.5, 0.2, 0.5), (0.5, 0.26, 0.42), title="Approve. Everything moves."),
+    Shot(102.5, "slack_11.jpg", (0.5, 0.2, 0.5), (0.5, 0.32, 0.45), title="Marco jumps in on his own"),
+    Shot(107.5, "statsig_1.jpg", (0.5, 0.5, 1.0), (0.3, 0.35, 0.55), title="Statsig gate: proactive_mode"),
     # Proof: audit trail (110.5 s - 119 s)
     Shot(110.0, "audit_tall.png", (0.5, 0.5, 1.0), (0.45, 0.45, 0.75), crop=(520, 2160, 2680, 3375),
          title="Every step on the audit trail"),

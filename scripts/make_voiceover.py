@@ -63,10 +63,15 @@ SECTIONS: list[tuple[str, float, float, str, bool]] = [
         False,
     ),
     (
-        "04_january", 85.5, 24.0,
+        "04_january", 85.5, 17.0,
         "Now the client moves the workshop to January. Tokyo tells Marco in one line. "
         "Marco finds the Perk trip, the calendar, the Uber and the expenses task. "
         "One plan, with draft notes to the people involved. Approve. Everything moves.",
+        False,
+    ),
+    (
+        "04b_proactive", 103.0, 7.0,
+        "Nobody tagged Marco. He saw the change and jumped in, behind a Statsig feature gate.",
         False,
     ),
     (
