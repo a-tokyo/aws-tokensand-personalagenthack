@@ -1,0 +1,22 @@
+openapi: 3.0.3
+info: {title: Senso policy search, version: 1.0.0}
+paths:
+  /org/search:
+    post:
+      operationId: policy_search
+      summary: Search the Mindera travel policy in Senso. Returns an answer and source chunks.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [query]
+              properties:
+                query: {type: string, description: The policy question.}
+      responses:
+        "200":
+          description: Answer with source chunks.
+          content:
+            application/json:
+              schema: {type: object}

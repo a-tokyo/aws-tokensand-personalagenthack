@@ -12,7 +12,7 @@ Use these lines on the slides and in the submission. Status: **live** = it runs 
 | **Persona** | Before a purchase is submitted, Marco can send the approver a Persona verification link, and the result goes on the audit trail (sandbox). | built; live run pending |
 | **Firedrill** | Simulates a plan change and a "skip approval" attack to test Marco before real bookings. Scores 99.3 and 98.8. | live |
 | **Superlinked SIE** | Superlinked SIE: reranks Marco's memory recall, so the right habit comes first. | live |
-| **Guild** | Planned: host Marco as a managed agent. | next |
+| **Guild** | The Marco trip desk runs in the cloud on Guild: a read-only agent that answers travel questions from Cognee memory and the Senso policy, with citations. [Agent](https://app.guild.ai/users/a-tokyo/agents/marco-trip-desk) | live |
 
 ## The pitch in one line
 

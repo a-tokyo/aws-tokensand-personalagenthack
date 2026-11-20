@@ -42,6 +42,21 @@ Every step writes one row: the step, the decision, the sources, the model, the c
 | **Superlinked SIE** | Reranks memory recall (Qwen3-Reranker on SIE Serverless), so the right habit comes first. |
 | **Persona** | Before a purchase is submitted, Marco can send the approver a Persona verification link, and the result goes on the audit trail (sandbox, `services/persona`). |
 | **Firedrill** | Simulated travellers and plan changes test Marco's decisions before they touch real bookings (`services/drill`). |
+| **Guild** | Hosts the Marco trip desk: a read-only cloud agent that answers travel questions from Cognee memory and the Senso policy (`guild/`). |
+
+## Guild: Marco trip desk in the cloud
+
+The Marco trip desk is a published Guild agent: [a-tokyo~marco-trip-desk](https://app.guild.ai/users/a-tokyo/agents/marco-trip-desk).
+
+- It answers travel questions from anywhere, without the Marco gateway.
+- It recalls facts from Marco's Cognee Cloud memory (dataset `marco_memory`).
+- It checks rules in the Senso travel policy.
+- It cites a source for each fact. It is read-only. It never books.
+- Cognee and Senso are custom Guild integrations (`guild/integrations/`). Their API keys are Guild credentials. The keys are not in the code.
+
+Sample answer to "Does hotel breakfast change my per diem?": "Yes. Your per diem changes when the hotel includes breakfast (travel policy)."
+
+Run it: `cd guild && guild agent test`.
 
 ## How it is built
 
