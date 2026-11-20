@@ -57,6 +57,8 @@ The Marco trip desk is a published Guild agent: [a-tokyo~marco-trip-desk](https:
 
 Sample answer to "Does hotel breakfast change my per diem?": "Yes. Your per diem changes when the hotel includes breakfast (travel policy)."
 
+Guild also enforces a spend cap on the cloud agent: the `marco` workspace has a $5 monthly budget, with a warning at 80%.
+
 Run it: `cd guild && guild agent test`.
 
 ## How it is built
