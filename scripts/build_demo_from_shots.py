@@ -65,9 +65,10 @@ SHOT_LIST: list[Shot] = [
     # Beat 04: the workshop moves; Marco finds the change himself (85.5 s - 110 s)
     Shot(85.0, "slack_11.jpg", (0.5, 0.2, 0.5), (0.5, 0.36, 0.5), title="04  Nobody tags Marco"),
     Shot(92.0, "slack_12.jpg", (0.5, 0.22, 0.5), (0.5, 0.36, 0.5), title="Marco finds the change himself"),
-    Shot(98.0, "statsig_1.jpg", (0.5, 0.5, 1.0), (0.3, 0.35, 0.55), title="Statsig gate: proactive_mode"),
-    Shot(100.5, "slack_09.jpg", (0.5, 0.3, 0.5), (0.5, 0.5, 0.5), title="One plan. Approve."),
-    Shot(105.0, "slack_10.jpg", (0.5, 0.2, 0.5), (0.5, 0.26, 0.42), title="Approve. Everything moves."),
+    Shot(97.5, "statsig_1.jpg", (0.5, 0.5, 1.0), (0.3, 0.35, 0.55), title="Statsig gate: proactive_mode"),
+    Shot(99.5, "slack_09.jpg", (0.5, 0.3, 0.5), (0.5, 0.5, 0.5), title="One plan. Approve."),
+    Shot(102.3, "slack_10.jpg", (0.5, 0.2, 0.5), (0.5, 0.26, 0.42), title="Approve. Everything moves."),
+    Shot(105.0, "architecture.png", (0.5, 0.5, 1.0), (0.5, 0.48, 0.8), title="Architecture"),
     # Proof: audit trail (110.5 s - 119 s)
     Shot(110.0, "audit_tall.png", (0.5, 0.5, 1.0), (0.45, 0.45, 0.75), crop=(520, 2160, 2680, 3375),
          title="Every step on the audit trail"),

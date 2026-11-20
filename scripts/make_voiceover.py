@@ -56,6 +56,11 @@ SECTIONS: list[tuple[str, float, float, str, bool]] = [
         False,
     ),
     (
+        "02b_arcee", 53.5, 7.5,
+        "The ranking tier is wired for Arcee's US-trained open-weight models, live as soon as credits land.",
+        False,
+    ),
+    (
         "03_instead", 61.5, 23.0,
         "Plans change. A colleague goes instead. "
         "Marco finds every item of the trip on the audit trail, and proposes to cancel them. Approve. "
@@ -67,6 +72,11 @@ SECTIONS: list[tuple[str, float, float, str, bool]] = [
         "Now the client moves the workshop again. The news lands in the thread. Nobody tags Marco. "
         "He finds the change himself and proposes a fix, behind a Statsig feature gate. "
         "One plan for the Perk trip, the calendar, the Uber and the expenses task. Approve. Everything moves.",
+        False,
+    ),
+    (
+        "04c_arch", 105.3, 4.9,
+        "Under the hood: OpenClaw, eleven partner tools, one audit trail.",
         False,
     ),
     (
