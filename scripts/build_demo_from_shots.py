@@ -25,7 +25,7 @@ ROOT = Path(__file__).resolve().parent.parent
 VDIR = ROOT / "data" / "video"
 SHOTS = VDIR / "shots"
 INTRO = 12.0          # the intro length on the final video
-LENGTH = 151.5        # this section: 0:12 to 2:43.5
+LENGTH = 156.0        # this section: 0:12 to 2:43.5
 XFADE = 0.35
 FONT = "/System/Library/Fonts/Helvetica.ttc"
 BG = (18, 20, 28)
@@ -62,12 +62,12 @@ SHOT_LIST: list[Shot] = [
     Shot(61.0, "slack_06.jpg", (0.5, 0.22, 0.5), (0.5, 0.36, 0.5), title="03  Someone else goes instead"),
     Shot(68.5, "slack_07.jpg", (0.5, 0.4, 0.5), (0.5, 0.62, 0.5), title="Cancel everything? Approve."),
     Shot(74.5, "firedrill_1.jpg", (0.5, 0.5, 1.0), (0.32, 0.55, 0.45), title="Firedrill: 99.3 and 98.8"),
-    # Beat 04: moved to January (85.5 s - 103 s), then the proactive beat (103 s - 110 s)
-    Shot(85.0, "slack_08.jpg", (0.5, 0.22, 0.5), (0.5, 0.36, 0.5), title="04  The workshop moves to January"),
-    Shot(91.0, "slack_09.jpg", (0.5, 0.3, 0.5), (0.5, 0.5, 0.5), title="One plan for every linked item"),
-    Shot(97.0, "slack_10.jpg", (0.5, 0.2, 0.5), (0.5, 0.26, 0.42), title="Approve. Everything moves."),
-    Shot(102.5, "slack_11.jpg", (0.5, 0.2, 0.5), (0.5, 0.32, 0.45), title="Marco jumps in on his own"),
-    Shot(107.5, "statsig_1.jpg", (0.5, 0.5, 1.0), (0.3, 0.35, 0.55), title="Statsig gate: proactive_mode"),
+    # Beat 04: the workshop moves; Marco finds the change himself (85.5 s - 110 s)
+    Shot(85.0, "slack_11.jpg", (0.5, 0.2, 0.5), (0.5, 0.36, 0.5), title="04  Nobody tags Marco"),
+    Shot(92.0, "slack_12.jpg", (0.5, 0.22, 0.5), (0.5, 0.36, 0.5), title="Marco finds the change himself"),
+    Shot(98.0, "statsig_1.jpg", (0.5, 0.5, 1.0), (0.3, 0.35, 0.55), title="Statsig gate: proactive_mode"),
+    Shot(100.5, "slack_09.jpg", (0.5, 0.3, 0.5), (0.5, 0.5, 0.5), title="One plan. Approve."),
+    Shot(105.0, "slack_10.jpg", (0.5, 0.2, 0.5), (0.5, 0.26, 0.42), title="Approve. Everything moves."),
     # Proof: audit trail (110.5 s - 119 s)
     Shot(110.0, "audit_tall.png", (0.5, 0.5, 1.0), (0.45, 0.45, 0.75), crop=(520, 2160, 2680, 3375),
          title="Every step on the audit trail"),
@@ -76,11 +76,12 @@ SHOT_LIST: list[Shot] = [
     Shot(124.0, "cognee_3.jpg", (0.6, 0.5, 0.8), (0.65, 0.55, 0.45), title="Cognee memory"),
     Shot(128.0, "card:sources", FULL, (0.5, 0.5, 0.92)),
     Shot(133.5, "obsidian_1.png", FULL, (0.6, 0.5, 0.7), title="Knowledge base"),
-    # Vision (138.5 s - 163.5 s)
+    # Vision (138.5 s - 168 s)
     Shot(138.0, "card:today", FULL, (0.5, 0.5, 0.92)),
-    Shot(144.0, "card:core", FULL, (0.5, 0.5, 0.9)),
-    Shot(149.0, "card:people", FULL, (0.5, 0.5, 0.92)),
-    Shot(156.0, "card:built", FULL, (0.5, 0.5, 0.92)),
+    Shot(143.5, "guild_1.jpg", (0.5, 0.4, 1.0), (0.42, 0.3, 0.6), title="Marco on Guild"),
+    Shot(147.0, "card:core", FULL, (0.5, 0.5, 0.9)),
+    Shot(153.0, "card:people", FULL, (0.5, 0.5, 0.92)),
+    Shot(159.5, "card:built", FULL, (0.5, 0.5, 0.92)),
 ]
 
 

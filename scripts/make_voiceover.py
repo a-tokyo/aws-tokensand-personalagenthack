@@ -63,15 +63,10 @@ SECTIONS: list[tuple[str, float, float, str, bool]] = [
         False,
     ),
     (
-        "04_january", 85.5, 17.0,
-        "Now the client moves the workshop to January. Tokyo tells Marco in one line. "
-        "Marco finds the Perk trip, the calendar, the Uber and the expenses task. "
-        "One plan, with draft notes to the people involved. Approve. Everything moves.",
-        False,
-    ),
-    (
-        "04b_proactive", 103.0, 7.0,
-        "Nobody tagged Marco. He saw the change and jumped in, behind a Statsig feature gate.",
+        "04_january", 85.5, 24.5,
+        "Now the client moves the workshop again. The news lands in the thread. Nobody tags Marco. "
+        "He finds the change himself and proposes a fix, behind a Statsig feature gate. "
+        "One plan for the Perk trip, the calendar, the Uber and the expenses task. Approve. Everything moves.",
         False,
     ),
     (
@@ -88,8 +83,9 @@ SECTIONS: list[tuple[str, float, float, str, bool]] = [
         False,
     ),
     (
-        "07_vision", 138.5, 25.0,
+        "07_vision", 137.8, 30.5,
         "We built Marco today for this hackathon. Starting today, we use it at our company for every Perk trip. "
+        "A cloud copy of Marco runs on Guild, with keys held by Guild. "
         "Travel is Marco's first skill. The same core runs any task you delegate: "
         "memory, policy, your decision, and a full audit trail. "
         "We enable people. We do not replace them. "
