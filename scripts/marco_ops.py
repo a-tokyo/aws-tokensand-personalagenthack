@@ -21,6 +21,7 @@ from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
 DATA = ROOT / "data"
 MODEL = "anthropic/claude-sonnet-5-5"
 
@@ -208,7 +209,21 @@ def cmd_replan_text(a) -> dict:
     record_many([audit(t["trip_id"], "replan", "notify", "proposed",
                        f"Marco saw the date change in Slack and proposed {len(plan['actions'])} actions.",
                        [{"type": "slack", "ref": a.thread_ts or "", "quote": a.text[:200]}])])
-    return {"change": change, **plan}
+    out = {"change": change, **plan}
+    if a.post:
+        import marco_card as mc
+        facts = {**mc.from_plan(t["trip_id"], change, plan), "mention": owner_id(),
+                 "lead": "The workshop moved. I can update your trip."}
+        out["card"] = mc.post("replan", facts, a.channel or "C0CLLEH6D1N", a.thread_ts)
+    return out
+
+
+def new_traveller(text: str) -> str:
+    """Name in 'X will go instead', or ''."""
+    import re
+
+    m = re.search(r"\b([A-Z][a-z]+)\b(?= (will )?(go|goes|travel|travels)\b.*\binstead)", text or "")
+    return m.group(1) if m else ""
 
 
 def cmd_cancel_propose(a) -> dict:
@@ -228,7 +243,16 @@ def cmd_cancel_propose(a) -> dict:
     record_many(rows)
     (DATA / "cancel_pending.json").write_text(json.dumps(
         {"trip_id": t["trip_id"], "thread_ts": a.thread_ts, "text": a.text, "actions": actions}, indent=2))
-    return {"trip_id": t["trip_id"], "traveller": t.get("traveller"), "actions": actions}
+    out = {"trip_id": t["trip_id"], "traveller": t.get("traveller"), "actions": actions}
+    if a.post:
+        import marco_card as mc
+        kinds = {"perk_cancel": "perk", "uber_cancel": "uber", "calendar": "calendar"}
+        facts = {"traveller": t.get("traveller"), "mention": owner_id(),
+                 "lead": f"{new_traveller(a.text) or 'Someone else'} goes instead. I can cancel your bookings.",
+                 "actions": [{"kind": kinds.get(x["step"], ""), "text": x["summary"]} for x in actions],
+                 "free_cancel": ["Perk draft: nothing booked", "Uber: free up to 1 h before"]}
+        out["card"] = mc.post("cancel", facts, a.channel or "C0CLLEH6D1N", a.thread_ts)
+    return out
 
 
 def cmd_cancel_apply(a) -> dict:
@@ -244,7 +268,16 @@ def cmd_cancel_apply(a) -> dict:
         st = json.loads(f.read_text())
         st["cancelled"] = True
         f.write_text(json.dumps(st, indent=2))
-    return {"trip_id": trip, "status": "approved", "audit_ids": res.get("ids", []),
+    out_card = None
+    if a.post:
+        import marco_card as mc
+        kinds = {"perk_cancel": "perk", "uber_cancel": "uber", "calendar": "calendar"}
+        who = new_traveller(pending.get("text", "")) or "The new traveller"
+        facts = {"traveller": "Tokyo", "mention": a.approved_by,
+                 "items": [{"kind": kinds.get(x["step"], ""), "text": x["summary"], "ref": x.get("ref")} for x in pending["actions"]],
+                 "next": f"{who} needs a booking. Tag @Marco with the dates to plan it."}
+        out_card = mc.post("cancelled", facts, a.channel or "C0CLLEH6D1N", pending.get("thread_ts"))
+    return {"trip_id": trip, "status": "approved", "audit_ids": res.get("ids", []), "card": out_card,
             "browser_todo": pending["actions"],
             "note": "Run each action in the browser (Perk: Chrome, delete draft. Uber: Chrome 4, cancel). Audit each as cancelled with its external_ref."}
 
@@ -301,13 +334,18 @@ def main(argv=None) -> int:
     s = sub.add_parser("replan-text")
     s.add_argument("--text", required=True)
     s.add_argument("--channel", default="")
+    s.add_argument("--post", action="store_true", help="post the replan card in the thread")
     s.add_argument("--thread-ts")
     s = sub.add_parser("cancel-propose")
     s.add_argument("--trip", default="")
+    s.add_argument("--channel", default="")
+    s.add_argument("--post", action="store_true")
     s.add_argument("--text", required=True)
     s.add_argument("--thread-ts")
     s = sub.add_parser("cancel-apply")
     s.add_argument("--approved-by", required=True)
+    s.add_argument("--channel", default="")
+    s.add_argument("--post", action="store_true", help="post the cancelled card (run after the browser steps)")
     a = ap.parse_args(argv)
     fn = {"room-check": cmd_room_check, "detect-change": cmd_detect_change, "clash": cmd_clash, "replan-text": cmd_replan_text,
           "cancel-propose": cmd_cancel_propose, "cancel-apply": cmd_cancel_apply}[a.cmd]

@@ -54,3 +54,27 @@ def test_every_card_has_a_fallback_text_and_valid_limits():
         assert card.fallback_text(kind, facts)
         for blk in card.BUILDERS[kind](facts):
             assert len(blk.get("fields", [])) <= 10
+
+
+def test_done_card_marks_each_status():
+    import marco_card as mc
+    blocks = mc.with_mention(mc.done_blocks({"trip": "t", "items": [
+        {"kind": "calendar", "text": "Moved events", "status": "done", "ref": "e1"},
+        {"kind": "perk", "text": "Change draft", "status": "held"},
+        {"kind": "uber", "text": "Reserve ride", "status": "failed"}]}), {"mention": "U1", "lead": "Done."})
+    body = blocks[2]["text"]["text"]
+    assert blocks[0]["text"]["text"] == "✅ Done · t" and blocks[1]["text"]["text"] == "<@U1> Done."
+    assert "✓" in body and "⏸" in body and "✗" in body and "`e1`" in body
+
+
+def test_cancelled_card_has_next_step():
+    import marco_card as mc
+    blocks = mc.cancelled_blocks({"traveller": "Tokyo", "items": [{"kind": "uber", "text": "Uber cancelled"}], "next": "Ana needs a booking."})
+    assert blocks[0]["text"]["text"].startswith("🛑 Trip cancelled") and "Ana" in blocks[-1]["text"]["text"]
+
+
+def test_replan_facts_from_plan_map_kinds():
+    import marco_card as mc
+    plan = {"actions": [{"step": "calendar", "summary": "Move"}, {"step": "uber_cancel", "summary": "Cancel"}]}
+    f = mc.from_plan("t", {"old_dates": {"start": "a", "end": "b"}, "new_dates": {"start": "c", "end": "d"}}, plan)
+    assert [x["kind"] for x in f["actions"]] == ["calendar", "uber"] and f["new_dates"] == "c to d"

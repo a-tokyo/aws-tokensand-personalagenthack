@@ -78,7 +78,11 @@ def poll_once(since: str) -> None:
         if "error" in plan:
             log(f"replan error: {plan.get('error')}")
             continue
-        ts = post(render(change, plan, os.environ.get("SLACK_OWNER_ID", "")))
+        sys.path.insert(0, str(ROOT / "scripts"))
+        import marco_card as mc
+        facts = {**mc.from_plan(TRIP, change, plan), "mention": os.environ.get("SLACK_OWNER_ID", ""),
+                 "lead": f"Email: {change.get('subject', '')[:80]}. I can update your trip."}
+        ts = mc.post("replan", facts, CHANNEL).get("ts")
         pending = {"thread_ts": ts, "channel": CHANNEL, "change": change, "plan": plan}
         (DATA / "replan_pending.json").write_text(json.dumps(pending, indent=2))
         cli("services.audit", "record", "--json", json.dumps({

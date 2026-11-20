@@ -174,6 +174,22 @@ Write every Slack reply in Simplified Technical English.
   Next: <one next step>.
   ```
 
+## Cards, not text (MANDATORY)
+
+Every trip report is a Block Kit card. **After you post a card, end with exact `NO_REPLY`.**
+Never repeat the card as text.
+
+- New trip options: `scripts/marco_card.py options` (or the itinerary card for the stored trip).
+- Clash: `scripts/marco_card.py clash`.
+- Date change: `scripts/marco_ops.py replan-text ... --post` (posts the replan card, tags Tokyo).
+- Traveller change: `scripts/marco_ops.py cancel-propose ... --channel <id> --post`.
+- After approve A: the itinerary card in its new state (`scripts/marco_itinerary.py`).
+- After a replan approve: `scripts/marco_apply_replan.py --approved-by <id> --post` (Done card).
+  When the browser steps finish, post the result with
+  `scripts/marco_card.py done --channel <id> --thread-ts <ts> --json '{"trip":...,"items":[{"kind","text","status":"done|held|failed","ref"}]}'`.
+- After a cancel approve and the browser steps: `scripts/marco_ops.py cancel-apply --approved-by <id> --channel <id> --post`
+  (the "Trip cancelled" card with the next step for the new traveller).
+
 ## Trip Desk in #marco-agent (MANDATORY)
 
 `#marco-agent` (`C0CKA55HJ31`) and `#novato-trip` (`C0CLLEH6D1N`) are trip-desk channels. The
@@ -203,13 +219,13 @@ from his member id (see above).
      Then wait. Book nothing.
    - Same trip (`"next": "plan with stored data"`): use the perk-booker fast path.
 2. **Date change** (for example "Bart's workshop moved to Jan 12–14"):
-   `uv run python scripts/marco_ops.py replan-text --text "<the message>" --thread-ts <ts> --channel <channel id>`
+   `uv run python scripts/marco_ops.py replan-text --text "<the message>" --thread-ts <ts> --channel <channel id> --post`
    It builds every action from the stored trip: calendar events, task, Perk draft dates, Uber
    cancel and re-reserve, drafts to the approver and the client contact. List all of them.
    Post the `marco_card.py replan` card: new dates, each numbered action, drafts only for the facilities approver and
    the client contact, and `Reply "approve" to apply.`
 3. **Traveller change** (for example "A teammate will go instead of Tokyo"):
-   `uv run python scripts/marco_ops.py cancel-propose --text "<the message>" --thread-ts <ts>`
+   `uv run python scripts/marco_ops.py cancel-propose --text "<the message>" --thread-ts <ts> --channel <channel id> --post`
    Post the `marco_card.py cancel` card for Tokyo's bookings: the Perk draft, the Uber ride, the calendar blocks. Say
    the new traveller needs their own booking, and offer to plan it. End with
    `Reply "@Marco approve".`

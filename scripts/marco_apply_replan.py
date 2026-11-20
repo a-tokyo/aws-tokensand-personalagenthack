@@ -36,6 +36,7 @@ def cli(module: str, *args: str) -> dict:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--approved-by", required=True)
+    ap.add_argument("--post", action="store_true", help="post the Done card in the replan thread")
     a = ap.parse_args(argv)
     sys.path.insert(0, str(ROOT / "scripts"))
     from marco_ops import NotOwner, require_owner
@@ -75,7 +76,16 @@ def main(argv=None) -> int:
             "supersedes": act.get("supersedes"), "approved_by": a.approved_by}))
         results.append({"n": act["n"], "step": step, "status": status, "summary": summary})
 
-    print(json.dumps({"trip_id": trip, "new_dates": change["new_dates"], "results": results}))
+    out = {"trip_id": trip, "new_dates": change["new_dates"], "results": results}
+    if a.post:
+        import marco_card as mc
+        status = {"done": "done", "failed": "failed"}
+        items = [{"kind": mc.KIND_OF_STEP.get(r["step"], ""), "text": r["summary"],
+                  "status": status.get(r["status"], "held")} for r in results]
+        out["card"] = mc.post("done", {"trip": trip, "items": items, "mention": a.approved_by,
+                                       "lead": "Calendar, task and drafts updated. Perk and Uber steps run next."},
+                              pending.get("channel") or "C0CLLEH6D1N", pending.get("thread_ts"))
+    print(json.dumps(out))
     return 0
 
 
