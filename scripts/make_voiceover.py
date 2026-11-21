@@ -76,7 +76,7 @@ SECTIONS: list[tuple[str, float, float, str, bool]] = [
     ),
     (
         "04c_arch", 105.3, 4.9,
-        "Under the hood: OpenClaw, eleven partner tools, one audit trail.",
+        "Under the hood: OpenClaw, ten partner tools, one audit trail.",
         False,
     ),
     (
