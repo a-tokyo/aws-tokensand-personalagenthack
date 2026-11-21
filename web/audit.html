@@ -209,7 +209,9 @@
       return article;
     }
 
-    function render(trips) {
+    function render(trips, aiCost, aiToday) {
+      const today = typeof aiToday === "number" ? money(aiToday) : "n/a";
+      root.append(node("p", "subtitle", `AI spend today: ${today} (OpenClaw usage, Anthropic)`));
       const entries = Object.entries(trips || {}).sort((a, b) => a[0].localeCompare(b[0]));
       count.textContent = `${entries.length} ${entries.length === 1 ? "trip" : "trips"}`;
       if (!entries.length) {
@@ -223,9 +225,9 @@
         const title = node("div");
         title.append(node("div", "eyebrow", `${rows.length} ${rows.length === 1 ? "step" : "steps"}`));
         title.append(node("h2", "", tripId));
-        const total = rows.reduce((sum, row) => sum + (Number(row.cost_usd) || 0), 0);
-        const cost = node("div", "cost", "Total AI cost");
-        cost.prepend(node("strong", "", money(total)));
+        const total = (aiCost || {})[tripId];
+        const cost = node("div", "cost", "AI cost (router + OpenClaw)");
+        cost.prepend(node("strong", "", typeof total === "number" ? money(total) : "n/a"));
         head.append(title, cost);
         section.append(head);
         const timeline = node("div", "timeline");
@@ -237,13 +239,14 @@
 
     const inline = document.getElementById("audit-data");
     if (inline && inline.textContent.trim()) {
-      render(JSON.parse(inline.textContent).trips);
+      const data = JSON.parse(inline.textContent);
+      render(data.trips, data.ai_cost_usd, data.ai_cost_today_usd);
     } else fetch("./audit.json", { cache: "no-store" })
       .then(response => {
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         return response.json();
       })
-      .then(document => render(document.trips))
+      .then(data => render(data.trips, data.ai_cost_usd, data.ai_cost_today_usd))
       .catch(() => {
         count.textContent = "Unavailable";
         root.append(node("div", "error", "Could not load audit.json. Run the audit export, then serve this folder over HTTP."));

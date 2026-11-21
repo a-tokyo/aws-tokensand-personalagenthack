@@ -476,14 +476,102 @@ def check_gate(name: str) -> bool:
         _close_statsig(client)
 
 
+LEDGER_DIR = ROOT / "data" / "ledger" / "events"
+
+
+def _ledger_costs() -> dict[str, float]:
+    """Sum the router ledger cost_usd per trip. Duplicate event_ids count once."""
+    totals: dict[str, float] = {}
+    seen: set[str] = set()
+    for path in sorted(LEDGER_DIR.rglob("*.jsonl")) if LEDGER_DIR.exists() else []:
+        for line in path.read_text(encoding="utf-8").splitlines():
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            event_id = str(event.get("event_id", ""))
+            if event_id and event_id in seen:
+                continue
+            seen.add(event_id)
+            trip = str(event.get("trip_id") or "")
+            totals[trip] = totals.get(trip, 0.0) + float(event.get("cost_usd") or 0)
+    return totals
+
+
+def _openclaw_usage() -> dict[str, Any] | None:
+    """Read OpenClaw sessions.usage through Marco's env. None when the gateway is unreachable."""
+    import subprocess
+
+    try:
+        proc = subprocess.run(
+            [str(ROOT / "scripts" / "marco-up.sh"), "openclaw", "gateway", "call", "sessions.usage", "--json"],
+            capture_output=True, text=True, timeout=60, check=False,
+        )
+        value = json.loads(proc.stdout)
+    except (OSError, subprocess.SubprocessError, json.JSONDecodeError):
+        return None
+    return value if isinstance(value, dict) else None
+
+
+def _thread_ts(session: dict[str, Any]) -> str | None:
+    key = str(session.get("key", ""))
+    return key.rsplit(":thread:", 1)[1] if ":thread:" in key else None
+
+
+def ai_costs(
+    grouped: dict[str, list[dict[str, Any]]],
+    ledger: dict[str, float],
+    usage: dict[str, Any] | None,
+    today: str,
+) -> tuple[dict[str, float | None], float | None]:
+    """Per-trip AI cost (router ledger + OpenClaw sessions mapped by Slack thread ts) and today's total.
+
+    A session maps to a trip when any audit row of that trip names its thread ts in
+    external_ref or a source ref. A trip with no ledger row and no mapped session gets None.
+    """
+    refs: dict[str, str] = {}
+    for trip, rows in grouped.items():
+        for row in rows:
+            for ref in [row.get("external_ref")] + [s.get("ref") for s in row.get("sources") or []]:
+                if ref:
+                    refs.setdefault(str(ref), trip)
+    per_trip: dict[str, float | None] = {
+        trip: ledger[trip] if trip in ledger else None for trip in grouped
+    }
+    today_total: float | None = None
+    if usage is not None:
+        today_total = 0.0
+        for session in usage.get("sessions") or []:
+            cost = (session.get("usage") or {}).get("totalCost")
+            if not isinstance(cost, (int, float)):
+                continue
+            updated = session.get("updatedAt")
+            if isinstance(updated, (int, float)):
+                day = datetime.fromtimestamp(updated / 1000).astimezone().date().isoformat()
+                if day == today:
+                    today_total += float(cost)
+            trip = refs.get(_thread_ts(session) or "")
+            if trip is not None:
+                per_trip[trip] = (per_trip[trip] or 0.0) + float(cost)
+    return per_trip, today_total
+
+
 def export_rows(out_path: Path) -> dict[str, list[dict[str, Any]]]:
     grouped: dict[str, list[dict[str, Any]]] = {}
     for row in list_rows():
         grouped.setdefault(str(row.get("trip_id", "")), []).append(row)
+    today = datetime.now().astimezone().date().isoformat()
+    per_trip, today_total = ai_costs(grouped, _ledger_costs(), _openclaw_usage(), today)
+    document = {
+        "trips": grouped,
+        "ai_cost_usd": per_trip,
+        "ai_cost_today_usd": today_total,
+        "ai_cost_source": "router ledger + OpenClaw sessions.usage (Anthropic)",
+    }
     out_path.parent.mkdir(parents=True, exist_ok=True)
     try:
         out_path.write_text(
-            json.dumps({"trips": grouped}, indent=2, ensure_ascii=False) + "\n",
+            json.dumps(document, indent=2, ensure_ascii=False) + "\n",
             encoding="utf-8",
         )
     except OSError as exc:

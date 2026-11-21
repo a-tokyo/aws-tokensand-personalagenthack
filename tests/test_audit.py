@@ -104,3 +104,19 @@ def test_record_many_writes_nothing_when_one_row_is_invalid():
         audit.record_many([_payload("novato-2027-01-12", "Good row."), bad])
 
     assert audit.list_rows("novato-2027-01-12") == []
+
+
+def test_ai_costs_maps_thread_sessions_and_keeps_unknown_as_none():
+    from services.audit.__main__ import ai_costs
+
+    grouped = {
+        "t1": [{"external_ref": None, "sources": [{"ref": "111.222"}]}],
+        "t2": [{"external_ref": None, "sources": []}],
+    }
+    usage = {"sessions": [
+        {"key": "agent:main:slack:channel:c1:thread:111.222", "usage": {"totalCost": 0.5}},
+        {"key": "agent:main:slack:direct:u1", "usage": {"totalCost": 0.25}},
+    ]}
+    per_trip, _ = ai_costs(grouped, {"t1": 0.1}, usage, "2026-11-20")
+    assert per_trip == {"t1": 0.6, "t2": None}
+    assert ai_costs(grouped, {}, None, "2026-11-20") == ({"t1": None, "t2": None}, None)
