@@ -125,7 +125,9 @@ def test_rank_uses_fake_client_and_writes_ledger(tmp_path, monkeypatch):
     assert out["tier"] == "large"
     assert out["choice"] == "Courtyard Novato"
     assert out["cost_usd"] > 0
-    report = ledger.report_for_date(date(2026, 11, 20))
+    from datetime import datetime, timezone
+
+    report = ledger.report_for_date(datetime.now(timezone.utc).date())
     assert report["by_trip"].get("novato-2026-11-30", 0) > 0
 
 
