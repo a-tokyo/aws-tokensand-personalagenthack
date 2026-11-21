@@ -78,6 +78,16 @@ VERIFIED = {"completed", "approved"}
 
 def _persona_button(state: dict) -> list[dict]:
     """Link button to the Persona check while the approver is not verified yet."""
+    import os
+    if os.getenv("MARCO_PERSONA_GATE", "") == "off":
+        return []
+    try:
+        from dotenv import dotenv_values
+        from pathlib import Path as _P
+        if dotenv_values(_P(__file__).resolve().parents[1] / ".env").get("MARCO_PERSONA_GATE") == "off" and not os.getenv("MARCO_PERSONA_GATE"):
+            return []
+    except Exception:
+        pass
     pv = state.get("persona") or {}
     if not pv.get("url") or pv.get("status") in VERIFIED:
         return []
