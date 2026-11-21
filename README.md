@@ -47,7 +47,7 @@ Every step writes one row: the step, the decision, the sources, the model, the c
 
 ## Guild: Marco trip desk in the cloud
 
-The Marco trip desk is a published Guild agent: [a-tokyo~marco-trip-desk](https://app.guild.ai/users/a-tokyo/agents/marco-trip-desk).
+The Marco trip desk is a published Guild agent: [a-tokyo~marco-trip-desk](https://app.guild.ai/users/a-tokyo/agents/a-tokyo~marco-trip-desk).
 
 - It answers travel questions from anywhere, without the Marco gateway.
 - It recalls facts from Marco's Cognee Cloud memory (dataset `marco_memory`).

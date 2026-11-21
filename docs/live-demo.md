@@ -15,7 +15,7 @@ uv run python scripts/marco_ops.py room-check --text "Bart's Novato workshop mov
 ```
 
 Open these tabs: Slack `#novato-trip`, `web/audit.html` (run `scripts/audit-standalone.sh` first),
-`web/memory-graph-cloud.html` (Cognee graph), https://app.guild.ai/users/a-tokyo/agents/marco-trip-desk.
+`web/memory-graph-cloud.html` (Cognee graph), https://app.guild.ai/users/a-tokyo/agents/a-tokyo~marco-trip-desk.
 
 ## Beats
 
