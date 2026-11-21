@@ -397,40 +397,30 @@ def _log_amplitude(row: dict[str, Any], event_name: str) -> None:
     api_key = os.getenv("AMPLITUDE_API_KEY")
     if not api_key:
         return
-    client = None
     try:
-        from amplitude import Amplitude, BaseEvent, Config
+        import httpx
 
-        client = Amplitude(
-            api_key,
-            Config(flush_queue_size=1, flush_interval_millis=500, flush_max_retries=0),
+        httpx.post(
+            "https://api2.amplitude.com/2/httpapi",
+            json={
+                "api_key": api_key,
+                "events": [
+                    {
+                        "user_id": "tokyo-marco",
+                        "event_type": event_name,
+                        "event_properties": {
+                            "step": row["step"],
+                            "trip": row["trip_id"],
+                            "model": row["model"],
+                            "cost": row["cost_usd"],
+                        },
+                    }
+                ],
+            },
+            timeout=3,
         )
-        client.track(
-            BaseEvent(
-                event_type=event_name,
-                user_id="tokyo",
-                event_properties={
-                    "step": row["step"],
-                    "trip": row["trip_id"],
-                    "model": row["model"],
-                    "cost": row["cost_usd"],
-                },
-            )
-        )
-        for future in client.flush():
-            try:
-                future.result(timeout=1)
-            except Exception:
-                pass
     except Exception:
         pass
-    finally:
-        if client is not None:
-            try:
-                client.shutdown()
-            except Exception:
-                pass
-
 
 def _log_analytics(row: dict[str, Any]) -> None:
     event_name = f"marco_{row['step']}_{row['status']}"
