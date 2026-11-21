@@ -109,7 +109,10 @@ def inquiry_status(inquiry_id: str, trip_id: str | None = None) -> dict[str, Any
     result = _result(payload)
     attrs = (payload.get("data") or {}).get("attributes") or {}
     reference = attrs.get("reference-id") or ""
-    trip = trip_id or (reference.split("-", 2)[1] if reference.startswith("marco-") else "unknown")
+    # reference-id is "marco-<trip>-<approver>"; trip ids may hold hyphens, Slack ids do not.
+    trip = trip_id or (
+        reference.removeprefix("marco-").rsplit("-", 1)[0] if reference.startswith("marco-") else "unknown"
+    )
     passed = result["status"] in {"completed", "approved"}
     failed = result["status"] in {"failed", "declined", "expired"}
     _audit(

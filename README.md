@@ -41,7 +41,7 @@ Every step writes one row: the step, the decision, the sources, the model, the c
 | **Amplitude** | Agent analytics: each step of each trip is a tracked event. |
 | **Arcee** | The ranking tier is wired for Arcee's US-trained open-weight models through its OpenAI-compatible API (live model list). Live calls start when hackathon credits land; until then ranking runs on Claude. |
 | **Superlinked SIE** | Reranks memory recall (Qwen3-Reranker on SIE Serverless), so the right habit comes first. |
-| **Persona** | Before a purchase is submitted, Marco can send the approver a Persona verification link, and the result goes on the audit trail (sandbox, `services/persona`). |
+| **Persona** | Live (sandbox). Before a purchase is submitted, Marco creates a Persona inquiry (Government ID and Selfie template) for the approver and sends the hosted verification link. `status` reads the inquiry back; the result goes on the audit trail (`services/persona`). |
 | **Firedrill** | Simulated travellers and plan changes test Marco's decisions before they touch real bookings (`services/drill`). |
 | **Guild** | Hosts the Marco trip desk: a read-only cloud agent that answers travel questions from Cognee memory and the Senso policy (`guild/`). |
 

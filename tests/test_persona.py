@@ -79,3 +79,9 @@ def test_missing_key(monkeypatch, capsys):
     monkeypatch.delenv("PERSONA_API_KEY")
     assert persona.main(["verify-approver", "--approver", "U1", "--trip", "t1"]) == 1
     assert json.loads(capsys.readouterr().out)["error"] == "missing_config"
+
+
+def test_status_keeps_hyphenated_trip_id(monkeypatch, capsys):
+    _mock(monkeypatch, 200, _inquiry("created", ref="marco-test-persona-U123"), [])
+    assert persona.main(["status", "--inquiry", "inq_abc"]) == 0
+    assert audit.list_rows("test-persona")[-1]["external_ref"] == "inq_abc"
