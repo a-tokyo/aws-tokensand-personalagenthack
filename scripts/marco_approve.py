@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 from datetime import date, timedelta
@@ -168,7 +169,13 @@ def main(argv=None) -> int:
     # 4-5. Perk and Uber run in the browser. Marco does them next, per the skills, and audits each.
     # Persona: verify the approver before any Perk submit (submit asked, or demo mode).
     verified = False
-    if a.submit or state.get("demo_mode"):
+    try:
+        from dotenv import dotenv_values
+        gate = os.getenv("MARCO_PERSONA_GATE") or dotenv_values(Path(__file__).resolve().parents[1] / ".env").get("MARCO_PERSONA_GATE", "on")
+    except Exception:
+        gate = os.getenv("MARCO_PERSONA_GATE", "on")
+    persona_on = gate != "off"
+    if persona_on and (a.submit or state.get("demo_mode")):
         pv, verified = persona_check(state, a.approved_by, a.trip)
         out["persona"] = pv
         if pv.get("url"):
