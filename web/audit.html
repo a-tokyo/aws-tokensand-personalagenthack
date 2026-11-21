@@ -192,7 +192,7 @@
       time.dateTime = row.ts || "";
       meta.append(time);
       if (row.model) meta.append(node("span", "model", row.model));
-      meta.append(node("span", "", money(row.cost_usd)));
+      if (row.cost_usd > 0) meta.append(node("span", "", money(row.cost_usd)));
       if (row.supersedes) {
         const link = node("a", "supersedes", `↩ supersedes ${row.supersedes.slice(0, 8)}`);
         link.href = `#row-${row.supersedes}`;
@@ -210,8 +210,9 @@
     }
 
     function render(trips, aiCost, aiToday) {
+      trips = Object.fromEntries(Object.entries(trips || {}).filter(([id]) => !/^(test-|drill-|smoke|novato-recall)/.test(id) && (aiCost || {})[id] !== undefined));
       const today = typeof aiToday === "number" ? money(aiToday) : "n/a";
-      root.append(node("p", "subtitle", `AI spend today: ${today} (OpenClaw usage, Anthropic)`));
+      root.append(node("p", "subtitle", `AI spend today: ${today} (PI agent usage, Anthropic)`));
       const entries = Object.entries(trips || {}).sort((a, b) => a[0].localeCompare(b[0]));
       count.textContent = `${entries.length} ${entries.length === 1 ? "trip" : "trips"}`;
       if (!entries.length) {
@@ -226,7 +227,7 @@
         title.append(node("div", "eyebrow", `${rows.length} ${rows.length === 1 ? "step" : "steps"}`));
         title.append(node("h2", "", tripId));
         const total = (aiCost || {})[tripId];
-        const cost = node("div", "cost", "AI cost (router + OpenClaw)");
+        const cost = node("div", "cost", "AI cost (PI agent + ranking)");
         cost.prepend(node("strong", "", typeof total === "number" ? money(total) : "n/a"));
         head.append(title, cost);
         section.append(head);
