@@ -90,6 +90,7 @@ it and refuse anyone else (`{"error":"not_owner"}`). On `not_owner`, reply in th
   memory that the work is already done: the script checks with Google whether the events and the
   task still exist, and creates them again if not. **Run it once.** A second run with the same thread and option
   changes nothing and returns `"already_done": true`. Never run it again to "retry".
+  **Persona:** with `--submit` or in demo mode, the script checks the approver with Persona first. Perk submit waits until the Persona status is `completed` or `approved`. Put `persona.url` on the card as the "🪪 Verify it's you (Persona)" button.
   To remove a wrong task: `uv run python -m services.gws task-delete --task-id <id>`.
   To remove a wrong event: `uv run python -m services.gws calendar-delete --event-id <id>`.
 - **"@Marco approve" in a replan thread** (see `data/replan_pending.json`):

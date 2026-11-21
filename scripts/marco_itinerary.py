@@ -73,6 +73,18 @@ def _checklist(state: dict) -> list[str]:
     return items
 
 
+VERIFIED = {"completed", "approved"}
+
+
+def _persona_button(state: dict) -> list[dict]:
+    """Link button to the Persona check while the approver is not verified yet."""
+    pv = state.get("persona") or {}
+    if not pv.get("url") or pv.get("status") in VERIFIED:
+        return []
+    return [{"type": "button", "action_id": "persona_verify", "style": "primary",
+             "text": {"type": "plain_text", "emoji": True, "text": "🪪 Verify it's you (Persona)"}, "url": pv["url"]}]
+
+
 def build_blocks(state: dict, mention: str, audit_count: int, status: str = "") -> list[dict]:
     h, ride, draft = state["hotel_info"], state["ground"][0], state["perk_draft"]
     place = state["place"].split(",")[0]
@@ -117,7 +129,7 @@ def build_blocks(state: dict, mention: str, audit_count: int, status: str = "") 
         blocks.append({"type": "section", "text": {"type": "mrkdwn", "text": "📋 *Checklist*\n" + "\n".join(f"• {i}" for i in _checklist(state))}})
         blocks.append({"type": "actions", "elements": [
             {"type": "button", "action_id": "open_perk", "text": {"type": "plain_text", "text": "Open in Perk"},
-             "url": draft.get("itinerary_url") or PERK_URL}]})
+             "url": draft.get("itinerary_url") or PERK_URL}] + _persona_button(state)})
     blocks.append({"type": "context", "elements": [{"type": "mrkdwn", "text": (
         f"Audit trail: {audit_count} steps · trip `{state['trip_id']}` · sources: Cognee memory, Senso policy")}]})
     return blocks

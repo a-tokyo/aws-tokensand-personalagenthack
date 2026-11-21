@@ -106,8 +106,12 @@ KIND_OF_STEP = {"calendar": "calendar", "ticket": "task", "perk_fill": "perk", "
 def done_blocks(f: dict) -> list[dict]:
     lines = [f"{STATUS_ICON.get(i['status'], '•')} {ICONS.get(i.get('kind', ''), '')} {i['text']}"
              + (f"  `{i['ref']}`" if i.get("ref") else "") for i in f["items"]]
-    return [_header(f"✅ Done · {f['trip']}"), _section("\n".join(lines)),
-            _context("✓ done · ⏸ held or next · ✗ failed")]
+    blocks = [_header(f"✅ Done · {f['trip']}"), _section("\n".join(lines))]
+    if f.get("persona_url"):
+        blocks.append({"type": "actions", "elements": [{"type": "button", "action_id": "persona_verify", "style": "primary",
+                       "text": {"type": "plain_text", "emoji": True, "text": "🪪 Verify it's you (Persona)"},
+                       "url": f["persona_url"]}]})
+    return blocks + [_context("✓ done · ⏸ held or next · ✗ failed")]
 
 
 def cancelled_blocks(f: dict) -> list[dict]:

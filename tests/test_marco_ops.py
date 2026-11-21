@@ -1,3 +1,4 @@
+import json
 import sys
 from pathlib import Path
 
@@ -160,3 +161,82 @@ def test_gate_is_cached_for_a_minute(tmp_path, monkeypatch):
     assert len(calls) == 1
     ops.gate_on(now=1100.0)
     assert len(calls) == 2
+
+
+def _approve_env(tmp_path, monkeypatch, state, persona_status):
+    import marco_approve as ap
+    monkeypatch.setenv("SLACK_OWNER_ID", "U_OWNER")
+    monkeypatch.setattr(ap, "ROOT", tmp_path)
+    (tmp_path / "data").mkdir()
+    (tmp_path / "data" / "trip_novato.json").write_text(json.dumps(state))
+    calls = []
+
+    def fake(module, *args):
+        calls.append((module, *args))
+        if module == "services.persona":
+            return {"inquiry_id": "inq_1", "url": "https://withpersona.com/verify?inquiry-id=inq_1", "status": persona_status}
+        if args[:1] == ("calendar-event",):
+            return {"event_ids": ["e"]}
+        if args[:1] == ("ticket",):
+            return {"task_id": "t1"}
+        return {"id": "r", "rows": []}
+
+    monkeypatch.setattr(ap, "cli", fake)
+    return ap, calls
+
+
+def _st(**extra):
+    st = _state()
+    st["perk_draft"].update({"itinerary_url": "https://perk/x"})
+    return {**st, **extra}
+
+
+def test_submit_holds_until_persona_verified(tmp_path, monkeypatch, capsys):
+    ap, calls = _approve_env(tmp_path, monkeypatch, _st(), "created")
+    assert ap.main(["--trip", "test-trip", "--option", "A", "--approved-by", "U_OWNER", "--submit"]) == 0
+    out = json.loads(capsys.readouterr().out)
+    assert ("services.persona", "verify-approver", "--approver", "U_OWNER", "--trip", "test-trip") in calls
+    assert out["persona"]["url"].endswith("inq_1")
+    assert not any(t["step"] == "perk_submit" for t in out["browser_todo"])
+    assert "held until verified" in out["held"][0]["text"]
+    saved = json.loads((tmp_path / "data" / "trip_novato.json").read_text())
+    assert saved["persona"]["inquiry_id"] == "inq_1" and saved["persona"]["approver"] == "U_OWNER"
+
+
+def test_submit_goes_ahead_when_persona_completed(tmp_path, monkeypatch, capsys):
+    prev = {"inquiry_id": "inq_1", "url": "u", "status": "pending", "approver": "U_OWNER"}
+    ap, calls = _approve_env(tmp_path, monkeypatch, _st(persona=prev), "completed")
+    assert ap.main(["--trip", "test-trip", "--option", "A", "--approved-by", "U_OWNER", "--submit"]) == 0
+    out = json.loads(capsys.readouterr().out)
+    assert ("services.persona", "status", "--inquiry", "inq_1", "--trip", "test-trip") in calls
+    assert not any(c[1] == "verify-approver" for c in calls if c[0] == "services.persona")
+    assert any(t["step"] == "perk_submit" for t in out["browser_todo"])
+
+
+def test_plain_approve_skips_persona(tmp_path, monkeypatch, capsys):
+    ap, calls = _approve_env(tmp_path, monkeypatch, _st(), "created")
+    assert ap.main(["--trip", "test-trip", "--option", "A", "--approved-by", "U_OWNER"]) == 0
+    assert not any(c[0] == "services.persona" for c in calls)
+
+
+def test_demo_mode_shows_link_and_holds_submit(tmp_path, monkeypatch, capsys):
+    import marco_itinerary as it
+    ap, calls = _approve_env(tmp_path, monkeypatch, _st(demo_mode=True), "created")
+    assert ap.main(["--trip", "test-trip", "--option", "A", "--approved-by", "U_OWNER"]) == 0
+    out = json.loads(capsys.readouterr().out)
+    assert any(c[0] == "services.persona" for c in calls)
+    assert out["browser_todo"] == []
+    assert any(h["step"] == "perk_submit" and "held until verified" in h["text"] for h in out["held"])
+    saved = json.loads((tmp_path / "data" / "trip_novato.json").read_text())
+    buttons = [e for b in it.build_blocks(saved, "U1", 0) if b["type"] == "actions" for e in b["elements"]]
+    assert any(e["text"]["text"] == "🪪 Verify it's you (Persona)" and e["url"].endswith("inq_1") for e in buttons)
+    saved["persona"]["status"] = "approved"
+    buttons = [e for b in it.build_blocks(saved, "U1", 0) if b["type"] == "actions" for e in b["elements"]]
+    assert not any(e["action_id"] == "persona_verify" for e in buttons)
+
+
+def test_done_card_has_persona_button():
+    import marco_card as mc
+    blocks = mc.done_blocks({"trip": "t", "items": [], "persona_url": "https://withpersona.com/verify?inquiry-id=i"})
+    el = [b for b in blocks if b["type"] == "actions"][0]["elements"][0]
+    assert el["url"].endswith("=i") and "Persona" in el["text"]["text"]

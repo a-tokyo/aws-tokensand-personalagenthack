@@ -7,7 +7,9 @@ What it does, in order, each step with an audit row:
   1. approval row (approved_by = Tokyo).
   2. calendar-block for the trip span (real write, "[Marco test]" prefix).
   3. expenses ticket (Google Tasks) due 3 days after the trip.
-  4. prints browser_todo: Perk option apply (and submit only with --submit), Uber time move.
+  4. with --submit or in demo_mode: Persona check of the approver (services.persona).
+     Perk submit waits until the inquiry status is completed or approved.
+  5. prints browser_todo: Perk option apply (and submit only with --submit), Uber time move.
      Marco runs those in the browser next and audits each with its external_ref.
 It prints one JSON object for Marco to summarise in the thread.
 """
@@ -72,6 +74,23 @@ def items_exist(prev: dict) -> bool:
     checks = [cli("services.gws", "exists", "--event-id", i) for i in ids]
     checks.append(cli("services.gws", "exists", "--task-id", task))
     return all(c.get("exists") for c in checks)
+
+
+VERIFIED = {"completed", "approved"}
+
+
+def persona_check(state: dict, approver: str, trip: str) -> tuple[dict, bool]:
+    """Reuse this approver's Persona inquiry if one exists, else start one. Return (inquiry, verified).
+
+    services.persona writes the audit row (step "approval", source type "persona") for each call.
+    """
+    prev = state.get("persona") or {}
+    if prev.get("inquiry_id") and prev.get("approver") == approver:
+        st = cli("services.persona", "status", "--inquiry", prev["inquiry_id"], "--trip", trip)
+        if st.get("inquiry_id"):
+            return st, st.get("status") in VERIFIED
+    pv = cli("services.persona", "verify-approver", "--approver", approver, "--trip", trip)
+    return pv, pv.get("status") in VERIFIED
 
 
 def latest(rows, step):
@@ -147,6 +166,14 @@ def main(argv=None) -> int:
     out["ticket"] = tk
 
     # 4-5. Perk and Uber run in the browser. Marco does them next, per the skills, and audits each.
+    # Persona: verify the approver before any Perk submit (submit asked, or demo mode).
+    verified = False
+    if a.submit or state.get("demo_mode"):
+        pv, verified = persona_check(state, a.approved_by, a.trip)
+        out["persona"] = pv
+        if pv.get("url"):
+            state["persona"] = {**pv, "approver": a.approved_by}
+
     ride = state["ground"][0]
     out["browser_todo"] = [
         {"step": "perk_fill", "browser": "Chrome", "do": f"Apply option {a.option} to Perk draft {perk_id} (skill perk-booker step 10b). Extend the hotel if proposed."},
@@ -158,12 +185,17 @@ def main(argv=None) -> int:
         out["held"] = [
             {"step": "perk_fill", "text": f"Perk option {a.option}: prepared, held for live demo. Not submitted."},
             {"step": "uber_schedule", "text": "Uber to SFO Fri 4 Dec 05:30, code 2K: prepared, held for live demo."},
+            {"step": "perk_submit", "text": "Perk submit: held until verified (Persona)."},
         ]
         for h in out["held"]:
             cli("services.audit", "record", "--json", json.dumps(row(
                 a.trip, h["step"], "proposed", h["text"], perk_src, approved_by=a.approved_by)))
-    elif a.submit:
+    elif a.submit and verified:
         out["browser_todo"].append({"step": "perk_submit", "browser": "Chrome", "do": f"Press 'Send approval request' for Perk trip {perk_id} (skill perk-booker step 8)."})
+    elif a.submit:
+        out["held"] = [{"step": "perk_submit", "text": "Perk submit: held until verified (Persona)."}]
+        cli("services.audit", "record", "--json", json.dumps(row(
+            a.trip, "perk_submit", "proposed", out["held"][0]["text"], perk_src, approved_by=a.approved_by)))
     # Keep the live ids with the trip, so a replan finds them without old audit rows.
     state["calendar_event_ids"] = out["calendar"]["event_ids"]
     state["task_id"] = out.get("ticket", {}).get("task_id")
