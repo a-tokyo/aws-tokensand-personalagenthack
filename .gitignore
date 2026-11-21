@@ -17,3 +17,8 @@ web/memory-graph-cloud.html
 web/audit-standalone.html
 web/audit.json
 vendor/tokensand/*.whl
+
+# local tool state, never commit
+download.html
+guild/.guild/
+guild/.npmrc
